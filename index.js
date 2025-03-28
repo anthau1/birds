@@ -1,6 +1,3 @@
-
-
-
 var express = require('express');
 const jwt = require("jsonwebtoken");
 var app = express();
@@ -50,6 +47,7 @@ app.post('/', async function(req, res){
         const username = req.body.username;
         const password = req.body.password;
         let promise1 = await data.checkUserExists(username)
+
         const token = jwt.sign(
             {
                 userId: "user._id,",
@@ -59,8 +57,8 @@ app.post('/', async function(req, res){
             "RANDOM-TOKEN",
             {expiresIn: "24h"}
         );
-
-        console.log("token1", promise1.password)
+        promise1.token1=token
+        console.log("token1", token)
         if (password === promise1.password) {
             await res.status(200).send(promise1);
         } else {
