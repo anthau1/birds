@@ -18,7 +18,6 @@ const db = new sqlite3.Database('posts.db');
 
     async checkUserExists  (username,password) {
         return await new Promise((resolve, reject) => {
-
             const parameter=username
             db.get("SELECT * FROM USERS7 where email=?", [parameter], (err, row) => {
                 if (err) {
@@ -27,10 +26,7 @@ const db = new sqlite3.Database('posts.db');
                     resolve(row);
                 }
             });
-
         });
-
-
     }
     updateUserInformation() {
     }
@@ -39,6 +35,19 @@ const db = new sqlite3.Database('posts.db');
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.post('/getUserInformation', async function (req, res) {
+    let data = new Database();
+    var promise1 = {};
+  
+    promise1.token = req.body.token;
+    const verified = jwt.verify(req.body.token.split(":")[1], "RANDOM-TOKEN");
+    promise1.ok = verified.userEmail;
+
+    let promise2 = await data.checkUserExists(verified.userEmail)
+    promise1.token = promise2.fullname;
+    res.status(200).send(promise1)
+})
 
 app.post('/', async function(req, res){
     let data = new Database();
@@ -50,8 +59,8 @@ app.post('/', async function(req, res){
 
         const token = jwt.sign(
             {
-                userId: "user._id,",
-                userEmail: "user.email"
+    
+                userEmail: username
             },
 
             "RANDOM-TOKEN",
