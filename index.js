@@ -1,5 +1,6 @@
 var express = require('express');
 const jwt = require("jsonwebtoken");
+
 var app = express();
 var cors = require('cors')
 const sqlite3 = require('sqlite3').verbose();
@@ -46,7 +47,9 @@ app.post('/getUserInformation', async function (req, res) {
 
     let promise2 = await data.checkUserExists(verified.userEmail)
     promise1.token = promise2.fullname;
-    res.status(200).send(promise1)
+    promise1.email = promise2.email;
+    promise1.exp = verified.b;
+    res.status(200 ).send(promise1)
 })
 
 app.post('/', async function(req, res){
@@ -56,18 +59,20 @@ app.post('/', async function(req, res){
         const username = req.body.username;
         const password = req.body.password;
         let promise1 = await data.checkUserExists(username)
-
+        const now = new Date() ;
         const token = jwt.sign(
             {
-    
-                userEmail: username
+                userEmail: username,
+                b: (now)
+
             },
 
             "RANDOM-TOKEN",
-            {expiresIn: "24h"}
+            {expiresIn: "38h"}
         );
         promise1.token1=token
         console.log("token1", token)
+
         if (password === promise1.password) {
             await res.status(200).send(promise1);
         } else {
