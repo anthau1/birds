@@ -7,7 +7,6 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('posts.db');
 
 class Database {
-
     constructor() {
         console.log("moi1")
         let sql = "CREATE TABLE  IF NOT EXISTS USERS7 ( contact_id INTEGER PRIMARY KEY AUTOINCREMENT,fullname TEXT,email TEXT NOT NULL UNIQUE,token TEXT,ip TEXT);"
@@ -57,28 +56,24 @@ app.post('/getUserInformation', async function (req, res) {
 })
 
 app.put('/', async function (req, res) {
-    //let sql = "CREATE TABLE  IF NOT EXISTS USERS7 ( contact_id INTEGER PRIMARY KEY AUTOINCREMENT,fullname TEXT,email TEXT NOT NULL UNIQUE,token TEXT,ip TEXT);"
-    //db.run(sql)
-    console.log("email=" + req.body.username)
-    console.log("full name=" + req.body.fullname)
+    let sql = "CREATE TABLE  IF NOT EXISTS USERS7 ( contact_id INTEGER PRIMARY KEY AUTOINCREMENT,fullname TEXT,email TEXT NOT NULL UNIQUE,token TEXT,ip TEXT,password TEXT);"
 
-    db.get("SELECT EXISTS(SELECT 1 FROM USERS7 WHERE email = ?) AS isExists", ["c1@c.fi"], (err, row) => {
+    db.get("SELECT EXISTS(SELECT 1 FROM USERS7 WHERE email = ?) AS isExists", [req.body.username], (err, row) => {
         if (err) {
             return console.error('Error running query:', err.message);
         }
-
         console.log("row.isExists=" + row.isExists)
         // The result is 1 if the email exists or 0 otherwise
-        if (row.isExist == 0) {
-            db.run("INSERT INTO USERS7 (email) VALUES('" + req.body.username + "')")
+        if (row.isExists === 0) {
+            console.log("The email doesn't exists.");
+            db.run("INSERT INTO USERS7 (email,fullname,password) VALUES('" + req.body.username + "','" + req.body.fullname + "','" + req.body.password + "')")
+
         }
-        if (row.isExists) {
-            console.log("The email already exists in the database.");
-        } else {
-        console.log("The email does not exist, it is unique.");
+        else {
+            console.log("The email exists.");
         }
 
-      })
+    })
 
     var promise1 = {};
 
@@ -102,7 +97,6 @@ app.post('/', async function (req, res) {
                     userEmail: username,
                     b: (now)
                 },
-
                 "RANDOM-TOKEN",
                 { expiresIn: "38h" }
             );
